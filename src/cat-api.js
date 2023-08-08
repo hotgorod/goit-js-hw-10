@@ -6,23 +6,16 @@ const breedSelect = document.querySelector('.breed-select')
 
 export function fetchBreeds() {
 // Make a request for a user with a given ID
-    return axios.get('/breeds')
-         .then((response) => {
-             
-             const storedBreeds = response.data
-             breedSelect.innerHTML = createmarkupSelect(storedBreeds)
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .finally(function () {
-            // always executed
-        });
+    
+    return axios.get('/breeds');
+   
 }
 
-  
-function createmarkupSelect(arr) {
-    return arr.map(({id, name}) =>`<option value="${id}">${name}</option>`).join('')
+export function fetchCatByBreed(breedId) {
+// Make a request for a user with a given ID
+    return axios.get(`/images/search?breed_ids=${breedId}`)
+        
 }
+  
+
 
