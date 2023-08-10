@@ -1,21 +1,29 @@
-
+import SlimSelect from 'slim-select'
 import axios from "axios";
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
+import 'slim-select/dist/slimselect.css';
 
 axios.defaults.baseURL = 'https://api.thecatapi.com/v1';
 axios.defaults.headers.common["x-api-key"] = "live_tzMloOqFHvlghw8IeHr0gJIJffKnmMbjPeff5NN5aAv49a4esXEay4dklPlrspjA";
-const breedSelect = document.querySelector('.breed-select')
+
+
+const breedSelect = document.querySelector('.breed-select');
+const loader = document.querySelector('.loader');
+const iferror = document.querySelector('.error');
+
 breedSelect.addEventListener('change', onSelect);
 const catInfo = document.querySelector('.cat-info')
 
+// create function to choose exact breed of cat
 function onSelect(event) {
     
     fetchCatByBreed(event.currentTarget.value).then(resp => {
-        catInfo.innerHTML = createMarkupCatCard(resp.data)
         
+        catInfo.innerHTML = createMarkupCatCard(resp.data)
+                
     })
     .catch(function (error) {
-        // handle error
+        iferror.style.display = 'block'
         console.log(error);
     })
     .finally(function () {
@@ -23,6 +31,13 @@ function onSelect(event) {
     });
 }
 
+// setTimeout to show select when all list of breeds came
+setTimeout(() => {
+    breedSelect.style.display = 'block';
+    
+},0)
+
+// create function to get list of all breeds
 fetchBreeds()
     .then((response) => {
              
@@ -34,13 +49,15 @@ fetchBreeds()
         console.log(error);
     })
     .finally(function () {
-        // always executed
+        loader.style.display = 'none'
     });
 
+// create markup for breed list
 function createMarkupSelect(arr) {
     return arr.map(({id, name}) =>`<option value="${id}">${name}</option>`).join('')
 }
 
+// create murkup for one breed
 function createMarkupCatCard(arr) {
     const url = arr[0].url
     const description = arr[0].breeds[0].description
@@ -54,20 +71,8 @@ function createMarkupCatCard(arr) {
       </p>`
     
 }
-   
-// function fetchCatByBreed(breedId) {
-//     // fetch('https://api.thecatapi.com/v1/images/search?breed_ids=beng&api_key=live_tzMloOqFHvlghw8IeHr0gJIJffKnmMbjPeff5NN5aAv49a4esXEay4dklPlrspjA')
-//     const BASE_URL = `https://api.thecatapi.com/v1`;
-//     const api_key = "live_tzMloOqFHvlghw8IeHr0gJIJffKnmMbjPeff5NN5aAv49a4esXEay4dklPlrspjA";
-//     fetch(`${BASE_URL}/images/search?breed_ids=${breedId}&api_key=${api_key}`)
-//         .then(resp => {
-//             console.log(resp.json())
-//             // if (!resp.ok) {
-//             //     throw new Error(resp.statusText)
-//             // }
+// create new beautiful select element
+new SlimSelect({
+  select: document.querySelector('#breed-select')
+})
 
-//             return resp.json()
-//     })
-// }
-// fetchCatByBreed('beng');
-// fetchCatByBreed2('bezxcvzvng');
