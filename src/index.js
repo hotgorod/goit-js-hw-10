@@ -16,18 +16,18 @@ const catInfo = document.querySelector('.cat-info')
 
 // create function to choose exact breed of cat
 function onSelect(event) {
-    
+    loader.style.display = 'block'
     fetchCatByBreed(event.currentTarget.value).then(resp => {
         
         catInfo.innerHTML = createMarkupCatCard(resp.data)
-                
+                        
     })
     .catch(function (error) {
         iferror.style.display = 'block'
         console.log(error);
     })
     .finally(function () {
-        // always executed
+        loader.style.display = 'none' // always executed
     });
 }
 
@@ -40,7 +40,10 @@ setTimeout(() => {
 // create function to get list of all breeds
 fetchBreeds()
     .then((response) => {
-             
+                if (response.status !== 200) {
+                console.log("Looks like there was a problem. Status Code: " + response.status);
+                return;
+                }
              const storedBreeds = response.data
              breedSelect.innerHTML = createMarkupSelect(storedBreeds)
         })
