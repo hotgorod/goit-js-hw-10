@@ -44,7 +44,7 @@ setTimeout(() => {
 fetchBreeds()
     .then((response) => {
         const storedBreeds = response.data
-        breedSelect.innerHTML = createMarkupSelect(storedBreeds)
+        breedSelect.innerHTML = createMarkupSelect(storedBreeds);
         slim();
         })
     .catch(function (error) {
@@ -82,6 +82,7 @@ function slim() {
     })
 }
 
+// function for error handling
 function onError() {
     Report.failure(
         'Okay',
