@@ -2,6 +2,7 @@ import SlimSelect from 'slim-select'
 import axios from "axios";
 import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 import 'slim-select/dist/slimselect.css';
+import { Report } from 'notiflix/build/notiflix-report-aio';
 
 axios.defaults.baseURL = 'https://api.thecatapi.com/v1';
 axios.defaults.headers.common["x-api-key"] = "live_tzMloOqFHvlghw8IeHr0gJIJffKnmMbjPeff5NN5aAv49a4esXEay4dklPlrspjA";
@@ -9,21 +10,23 @@ axios.defaults.headers.common["x-api-key"] = "live_tzMloOqFHvlghw8IeHr0gJIJffKnm
 
 const breedSelect = document.querySelector('.breed-select');
 const loader = document.querySelector('.loader');
-const iferror = document.querySelector('.error');
+
 
 breedSelect.addEventListener('change', onSelect);
 const catInfo = document.querySelector('.cat-info')
 
 // create function to choose exact breed of cat
 function onSelect(event) {
+    catInfo.innerHTML = '';
     loader.style.display = 'block'
     fetchCatByBreed(event.currentTarget.value).then(resp => {
         
         catInfo.innerHTML = createMarkupCatCard(resp.data)
                         
     })
-    .catch(function (error) {
-        iferror.style.display = 'block'
+        .catch(function (error) {
+        onError()
+        
         console.log(error);
     })
     .finally(function () {
@@ -40,14 +43,12 @@ setTimeout(() => {
 // create function to get list of all breeds
 fetchBreeds()
     .then((response) => {
-                if (response.status !== 200) {
-                console.log("Looks like there was a problem. Status Code: " + response.status);
-                return;
-                }
-             const storedBreeds = response.data
-             breedSelect.innerHTML = createMarkupSelect(storedBreeds)
+        const storedBreeds = response.data
+        breedSelect.innerHTML = createMarkupSelect(storedBreeds)
+        slim();
         })
     .catch(function (error) {
+        onError()
         // handle error
         console.log(error);
     })
@@ -75,7 +76,15 @@ function createMarkupCatCard(arr) {
     
 }
 // create new beautiful select element
-new SlimSelect({
-  select: document.querySelector('#breed-select')
-})
+function slim() {
+    new SlimSelect({
+        select: '#breed-select'
+    })
+}
 
+function onError() {
+    Report.failure(
+        'Okay',
+        'Oops! Something went wrong! Try reloading the page!',
+    );
+}
